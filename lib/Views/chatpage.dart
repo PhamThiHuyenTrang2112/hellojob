@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../Controller/word_controller.dart';
 
@@ -12,13 +16,40 @@ class ChatPage extends StatefulWidget {
 
 _handleTouchOnCamera() {}
 
-_handleTouchOnGalleryPhoto() {}
+
 
 class _ChatPageState extends State<ChatPage> {
+  var _image;
+
+  // var type;
+  var sort;
   final _textController = TextEditingController();
+  final ImagePicker imagePicker = ImagePicker();
   bool isComposing = false;
+
   int index=0;
-  //final List<ChatMessage> _list=[];
+  List<XFile>? imageFileList = [];
+  void selectImages() async {
+    final List<XFile> selectedImages = await imagePicker.pickMultiImage();
+    if (selectedImages!.isNotEmpty) {
+      imageFileList!.addAll(selectedImages);
+    }
+    setState(() {
+    });
+  }
+  Widget CustomSelect(){
+    return Column(
+      children: [
+        IconButton(onPressed: (){
+
+        },
+            icon: const Icon(Icons.send)),
+
+      ],
+    );
+  }
+  @override
+
   @override
   Widget build(BuildContext context) {
     return  GetBuilder<WordController>(
@@ -28,32 +59,33 @@ class _ChatPageState extends State<ChatPage> {
           wordController.getData();
           return Scaffold(
             appBar: AppBar(
+              automaticallyImplyLeading: false,
               title:  Text(wordController.wordList[index].name,),
             ),
-            body: SafeArea(
-                child: Column(
-                  children: [
-                    Flexible(
-                      child: ListView.builder(
-                        //controller: _controller,
-                          padding: const EdgeInsets.all(8.0),
-                          reverse: true,
-                          itemBuilder: (_, int index) {
-                            return const Text('we coming soon');
-                          }
-                        //=> _messages[index],
-                        //itemCount: _messages.length,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(color: Theme.of(context).cardColor),
-                      child: SafeArea(
-                        bottom: true,
-                        child: _buildTextComposer(),
-                      ),
-                    ),
-                  ],
-                )),
+            body: Column(
+              children: [
+                Flexible(
+                  child:  StaggeredGridView.countBuilder(
+                    scrollDirection:Axis.vertical,
+                    staggeredTileBuilder: (index)=>StaggeredTile.count(2,index.isEven?2:1),
+                          crossAxisCount: 4,
+                      itemCount: imageFileList!.length,
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 5,
+                      itemBuilder: (context, int index) {
+                        return Image.file(File(imageFileList![index].path), fit: BoxFit.cover);
+                      }
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(color: Theme.of(context).cardColor),
+                  child: SafeArea(
+                    bottom: true,
+                    child: _buildTextComposer(),
+                  ),
+                ),
+              ],
+            ),
           );
 
         }
@@ -105,6 +137,16 @@ void _handleSubmitted(String text) {
 
 
 }
+  // _handleTouchOnGalleryPhoto() async {
+  //   var source = ImageSource.gallery;
+  //   XFile image = await imagePicker.pickImage(
+  //       source: source,
+  //       imageQuality: 85,
+  //       preferredCameraDevice: CameraDevice.front);
+  //   setState(() {
+  //     _image = File(image.path);
+  //   });
+  // }
 
   Widget _buildTextComposer() {
     return IconTheme(
@@ -115,17 +157,18 @@ void _handleSubmitted(String text) {
           Container(
             margin: const EdgeInsets.only(bottom: 8.0),
             child: IconButton(
-                icon: const Icon(Icons.photo_camera), onPressed: () {}),
+                icon: const Icon(Icons.photo_camera), onPressed: () {
+
+            }),
           ),
           Container(
             margin: const EdgeInsets.only(bottom: 8.0),
             child: IconButton(
                 icon: const Icon(Icons.photo_library),
-                onPressed: () => _handleTouchOnGalleryPhoto()),
+                onPressed: () => selectImages()),
           ),
           Expanded(
             child: _buildTextInput(),
-
           ),
         ],
       ),
