@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1064027574033",
+    "project_id": "fetchdata-6bb12",
+    "storage_bucket": "fetchdata-6bb12.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1064027574033:android:341478043bc9d4356fc6b0",
+        "android_client_info": {
+          "package_name": "com.example.word_bank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1064027574033-7342mqqbptr1790d1meljk4cbps6jc7k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgeGFY067bn4qYqV4JhN1b0dG5WA_880g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1064027574033-7342mqqbptr1790d1meljk4cbps6jc7k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
