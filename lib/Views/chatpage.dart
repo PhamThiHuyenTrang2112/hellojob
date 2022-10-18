@@ -6,9 +6,10 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:word_bank/Controller/mess_controller.dart';
-import 'package:word_bank/Model/chat_message.dart';
 
+import 'package:word_bank/Controller/mess_controller.dart';
+
+import 'package:path/path.dart' as Path;
 import '../Binding/utility.dart';
 
 final firestore = FirebaseFirestore.instance;
@@ -24,14 +25,12 @@ class _ChatPageState extends State<ChatPage> {
   bool uploading = false;
   double val = 0;
 
-
-
-  List<File> _image = [];
+  List<XFile> _image = [];
   final picker = ImagePicker();
+
   // var type;
   String message = "";
-  var listchat = <ChatMessage>[];
-  final List<ChatMessage> _messages = [];
+
   var sort;
   final _textController = TextEditingController();
   late Image imageFromPreferences;
@@ -41,111 +40,202 @@ class _ChatPageState extends State<ChatPage> {
   PlatformFile? pickedFile;
   int index = 0;
   List<XFile>? imageFileList = [];
+  late String _uploadedFileURL;
 
   void selectImages() async {
     final List<XFile> selectedImages = await imagePicker.pickMultiImage();
-    final path='files/${pickedFile!.name}';
-    final file =File(pickedFile!.path!);
+    // final path='files/${pickedFile!.name}';
+    // final file =File(pickedFile!.path!);
     if (selectedImages!.isNotEmpty) {
-      imageFileList!.addAll(selectedImages);
+      _image.addAll(selectedImages);
+      uploadFile();
+
     }
     setState(() {
       print('lưu ảnh');
-      final ref=FirebaseStorage.instance.ref().child(path);
-      ref.putFile(file);
+      // final ref=FirebaseStorage.instance.ref().child(path);
+      // ref.putFile(file);
     });
   }
 
-
+  @override
+  void initState() {
+    super.initState();
+    chatReference = FirebaseFirestore.instance.collection('imageURLs');
+  }
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference messa = FirebaseFirestore.instance.collection('messages');
+    CollectionReference messa =
+        FirebaseFirestore.instance.collection('messages');
     return Scaffold(
-      backgroundColor: Color(-2633006),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text(
-          "Hello chat",
+        backgroundColor: Color(-2633006),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: const Text(
+            "Hello chat",
+          ),
         ),
-      ),
+        body: GetBuilder<MessController>(
+            init: MessController(),
+            builder: (messa) {
+              messa.getDataMess();
+              return Column(
+                children: <Widget>[
+                  Flexible(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8.0),
+                      reverse: true,
+                      itemBuilder: (_, int index) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            (messa.messlist[index].messageContent.isEmpty || messa.messlist[index].messageContent == '' || messa.messlist[index].messageContent.length == 0)?SizedBox():Container(
+                              margin:
+                                  const EdgeInsets.only(bottom: 10, right: 10),
+                              height: 45,
+                              width: 150,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ), //
+                              ),
+                              child: Align(
+                                  alignment: Alignment.center,
+                                  child:  Text(
+                                      messa.messlist[index].messageContent)
+                              ),
+                            ),
+                            (messa.messlist[index].arrimg==null || messa.messlist[index].arrimg.length == 0)? Container():
+                              Row(
+                                children: [
+                                  for(int i=0;i<messa.messlist[index].arrimg.length;i++)
 
-      body: GetBuilder<MessController>(
-          init: MessController(),
-          initState: (_){},
-        builder: (messa){
-          messa.getDataMess();
-          return Column(
-            children: <Widget>[
-              Flexible(
-                //new
-                child: ListView.builder(
-                  //new
-                  padding: new EdgeInsets.all(8.0),
-                  reverse: true,
-                  itemBuilder: (_, int index) {
-                    return  Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        //_messages[index],
-                        Container(
-                          margin: EdgeInsets.only(bottom: 10,right: 10),
-                          height: 45,
-                          width: 150,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(12),
-                            ), //
-                          ),
-                          child: Align(
-                              alignment: Alignment.center,
-                              child: Text(messa.messlist[index].messageContent)),
-                        ),
-                        Container(
-                          width: 300,
-                          height: 300,
-                          margin: const EdgeInsets.only(left: 40),
-                          child: StaggeredGridView.countBuilder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              staggeredTileBuilder: (index)=>
-                                  StaggeredTile.count(
-                                      (index%7)==0?3:1,(index%7==0)?2:1
-                                    //2,3
-                                  ),
-                              // index%7==0?const StaggeredTile.count(2,2):const StaggeredTile.count(1, 1),
-                              crossAxisCount: 3,
-                              itemCount: imageFileList!.length,
-                              itemBuilder: (context, int index) {
+                                      Image.network(messa.messlist[index].arrimg[i],
+                                        width: 100,height: 100,
 
-                                //return Image.file(File(imageFileList![index].path), fit: BoxFit.cover);
-                                return
-                                  Card(
-                                      child: Image.file(File(imageFileList![index].path), fit: BoxFit.cover,alignment: Alignment.center,scale: 3,)
-                                  );
-                              }
-                          ),
-                        )
-                      ],
-                    );
-                  },
-                  itemCount: messa.messlist.length,
-                  //_messages.length,
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(color: Theme.of(context).cardColor),
-                child: _buildTextComposer(),
-              ),
-            ],
-          );
-      }
-      )
-
-    );
+                            ),
+                                ],
+                              )
+                            // StreamBuilder<QuerySnapshot>(
+                            //     stream: FirebaseFirestore.instance
+                            //         .collection('imageURLs')
+                            //         .snapshots(),
+                            //     builder: (context, snapshot) {
+                            //       return !snapshot.hasData
+                            //           ? const Center(
+                            //               child: CircularProgressIndicator(),
+                            //             )
+                            //           : Container(
+                            //               width: 300,
+                            //               height: 300,
+                            //               margin:
+                            //                   const EdgeInsets.only(left: 40),
+                            //               child: StaggeredGridView.countBuilder(
+                            //                   physics:
+                            //                       const NeverScrollableScrollPhysics(),
+                            //                   staggeredTileBuilder: (index) =>
+                            //                       StaggeredTile.count(
+                            //                           (index % 7) == 0 ? 3 : 1,
+                            //                           (index % 7 == 0) ? 2 : 1
+                            //                           //2,3
+                            //                           ),
+                            //                   // index%7==0?const StaggeredTile.count(2,2):const StaggeredTile.count(1, 1),
+                            //                   crossAxisCount: 3,
+                            //                   //itemCount: _image.length,
+                            //                   itemCount: snapshot.data!.docs.length,
+                            //                   itemBuilder:
+                            //                       (context, int index) {
+                            //                     //return Image.file(File(imageFileList![index].path), fit: BoxFit.cover);
+                            //                     return Container(
+                            //                       margin:
+                            //                           const EdgeInsets.all(3),
+                            //                       child:
+                            //                           FadeInImage.memoryNetwork(
+                            //                               fit: BoxFit.cover,
+                            //                               placeholder:
+                            //                                   kTransparentImage,
+                            //                               image: snapshot
+                            //                                   .data!.docs[index]
+                            //                                   .get('url')),
+                            //                     );
+                            //                     // Card(
+                            //                     //     child: Image.file(File(imageFileList![index].path), fit: BoxFit.cover,alignment: Alignment.center,scale: 3,)
+                            //                     //
+                            //                     // );
+                            //                   }),
+                            //             );
+                            //     })
+                          ],
+                        );
+                      },
+                      itemCount: messa.messlist.length,
+                      //_messages.length,
+                    ),
+                  ),
+                  Container(
+                    decoration:
+                        BoxDecoration(color: Theme.of(context).cardColor),
+                    child: _buildTextComposer(),
+                  ),
+                ],
+              );
+            }));
   }
 
 
+  // chooseImage() async {
+  //   final pickedFile = await picker.getImage(source: ImageSource.gallery);
+  //   setState(() {
+  //     _image.add(File(pickedFile!.path));
+  //     uploadFile();
+  //   });
+  //   if (pickedFile!.path == null) retrieveLostData();
+  // }
+
+  // Future<void> retrieveLostData() async {
+  //   final LostData response = await picker.getLostData();
+  //   if (response.isEmpty) {
+  //     return;
+  //   }
+  //   if (response.file != null) {
+  //     setState(() {
+  //       _image.add(File(response.file!.path));
+  //     });
+  //   } else {
+  //     print(response.file);
+  //   }
+  // }
+
+  Future uploadFile() async {
+    int i = 1;
+    CollectionReference mess =
+    FirebaseFirestore.instance.collection('messages');
+    List<String> imgs = [];
+
+    for (var img in _image) {
+      setState(() {
+        val = i / _image.length;
+      });
+      Reference firebaseStorageRef = FirebaseStorage.instance
+          .ref()
+          .child('chats/${Path.basename(img.path)}');
+      File fileX = File(img.path);
+      await firebaseStorageRef.putFile(fileX).whenComplete(() async {
+        await firebaseStorageRef.getDownloadURL().then((value) {
+          chatReference.add({'url': value});
+          imgs.add(value);
+        });
+      });
+    }
+
+    mess
+        .add({ 'text': '', 'images': imgs, 'time':DateTime.now().microsecondsSinceEpoch})
+        .then((value) => print(" data Added"))
+        .catchError((error) => print("data couldn't be added."));
+    i++;
+  }
 
   Widget _buildTextInput() {
     return Container(
@@ -190,12 +280,15 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleSubmitted(String text) {
-    CollectionReference mess = FirebaseFirestore.instance.collection('messages');
+    CollectionReference mess =
+        FirebaseFirestore.instance.collection('messages');
     _textController.clear();
-    ChatMessage chatMessage =  ChatMessage(text: text);
+    // ChatMessage chatMessage =  ChatMessage(text: text);
     setState(() {
       //_messages.insert(0, chatMessage);
-      mess.add({'text':text}).then((value) => print(" data Added"))
+      mess
+          .add({'text': text, 'images': [],'time':DateTime.now().microsecondsSinceEpoch})
+          .then((value) => print(" data Added"))
           .catchError((error) => print("data couldn't be added."));
     });
   }
@@ -220,41 +313,6 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: _buildTextInput(),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class ChatMessage extends StatelessWidget {
-   ChatMessage({required this.text});
-
-  final String text;
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
-      child:  Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: <Widget>[
-          Container(
-            height: 45,
-            width: 150,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(
-                Radius.circular(12),
-              ), //
-            ),
-            child: Align(
-                alignment: Alignment.center,
-                child: Text(text)),
-          ),
-          //child: Text(text),
-
-
         ],
       ),
     );

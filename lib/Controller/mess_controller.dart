@@ -13,11 +13,10 @@ class MessController extends GetxController{
 
   Future<void> getDataMess() async {
     try{
-      QuerySnapshot words = await FirebaseFirestore.instance.collection('messages').get();
+      QuerySnapshot words = await FirebaseFirestore.instance.collection('messages').orderBy('time', descending:  true).get();
       messlist.clear();
       for(var word in words.docs){
-        print('đây là ${word}');
-        messlist.add(ChatMessage(word['text']));
+        messlist.add(ChatMessage(word['text'],word['images']));
       }
       isLoading = false;
     } catch(e) {
