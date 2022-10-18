@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,17 +45,13 @@ class _ChatPageState extends State<ChatPage> {
 
   void selectImages() async {
     final List<XFile> selectedImages = await imagePicker.pickMultiImage();
-    // final path='files/${pickedFile!.name}';
-    // final file =File(pickedFile!.path!);
     if (selectedImages!.isNotEmpty) {
       _image.addAll(selectedImages);
       uploadFile();
 
     }
     setState(() {
-      print('lưu ảnh');
-      // final ref=FirebaseStorage.instance.ref().child(path);
-      // ref.putFile(file);
+      // uploadFile();
     });
   }
 
@@ -107,71 +104,39 @@ class _ChatPageState extends State<ChatPage> {
                                       messa.messlist[index].messageContent)
                               ),
                             ),
-                            (messa.messlist[index].arrimg==null || messa.messlist[index].arrimg.length == 0)? Container():
-                              Row(
+                            (messa.messlist[index].arrimg.isEmpty)? Container():
+                              Column(
                                 children: [
                                   for(int i=0;i<messa.messlist[index].arrimg.length;i++)
+                                   CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      imageUrl: messa.messlist[index].arrimg[i],
+                                      imageBuilder: (context, imageProvider){
+                                        return Container(
+                                          width: 60,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover
+                                              )
+                                          ),
+                                        );
 
-                                      Image.network(messa.messlist[index].arrimg[i],
-                                        width: 100,height: 100,
+                                      },
+                                      placeholder: (context, url) =>  const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                                    ),
+                                   //    Image.network(messa.messlist[index].arrimg[i],
+                                   //      width: 100,height: 100,),
 
-                            ),
                                 ],
                               )
-                            // StreamBuilder<QuerySnapshot>(
-                            //     stream: FirebaseFirestore.instance
-                            //         .collection('imageURLs')
-                            //         .snapshots(),
-                            //     builder: (context, snapshot) {
-                            //       return !snapshot.hasData
-                            //           ? const Center(
-                            //               child: CircularProgressIndicator(),
-                            //             )
-                            //           : Container(
-                            //               width: 300,
-                            //               height: 300,
-                            //               margin:
-                            //                   const EdgeInsets.only(left: 40),
-                            //               child: StaggeredGridView.countBuilder(
-                            //                   physics:
-                            //                       const NeverScrollableScrollPhysics(),
-                            //                   staggeredTileBuilder: (index) =>
-                            //                       StaggeredTile.count(
-                            //                           (index % 7) == 0 ? 3 : 1,
-                            //                           (index % 7 == 0) ? 2 : 1
-                            //                           //2,3
-                            //                           ),
-                            //                   // index%7==0?const StaggeredTile.count(2,2):const StaggeredTile.count(1, 1),
-                            //                   crossAxisCount: 3,
-                            //                   //itemCount: _image.length,
-                            //                   itemCount: snapshot.data!.docs.length,
-                            //                   itemBuilder:
-                            //                       (context, int index) {
-                            //                     //return Image.file(File(imageFileList![index].path), fit: BoxFit.cover);
-                            //                     return Container(
-                            //                       margin:
-                            //                           const EdgeInsets.all(3),
-                            //                       child:
-                            //                           FadeInImage.memoryNetwork(
-                            //                               fit: BoxFit.cover,
-                            //                               placeholder:
-                            //                                   kTransparentImage,
-                            //                               image: snapshot
-                            //                                   .data!.docs[index]
-                            //                                   .get('url')),
-                            //                     );
-                            //                     // Card(
-                            //                     //     child: Image.file(File(imageFileList![index].path), fit: BoxFit.cover,alignment: Alignment.center,scale: 3,)
-                            //                     //
-                            //                     // );
-                            //                   }),
-                            //             );
-                            //     })
                           ],
                         );
                       },
                       itemCount: messa.messlist.length,
-                      //_messages.length,
+
                     ),
                   ),
                   Container(
@@ -185,28 +150,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
 
-  // chooseImage() async {
-  //   final pickedFile = await picker.getImage(source: ImageSource.gallery);
-  //   setState(() {
-  //     _image.add(File(pickedFile!.path));
-  //     uploadFile();
-  //   });
-  //   if (pickedFile!.path == null) retrieveLostData();
-  // }
 
-  // Future<void> retrieveLostData() async {
-  //   final LostData response = await picker.getLostData();
-  //   if (response.isEmpty) {
-  //     return;
-  //   }
-  //   if (response.file != null) {
-  //     setState(() {
-  //       _image.add(File(response.file!.path));
-  //     });
-  //   } else {
-  //     print(response.file);
-  //   }
-  // }
 
   Future uploadFile() async {
     int i = 1;
