@@ -35,7 +35,6 @@ class _ChatPageState extends State<ChatPage> {
   // var type;
   String message = "";
 
-
   var sort;
   final _textController = TextEditingController();
   late Image imageFromPreferences;
@@ -46,21 +45,19 @@ class _ChatPageState extends State<ChatPage> {
   int index = 0;
   List<XFile>? imageFileList = [];
   late String _uploadedFileURL;
-  bool isupload=false;
+  bool isupload = false;
 
   void selectImages() async {
     Get.find<MessController>().getDataImage();
     final List<XFile> selectedImages = await imagePicker.pickMultiImage();
     if (selectedImages!.isNotEmpty) {
-
       _image.addAll(selectedImages);
       uploadFile();
     }
     setState(() {
-      isupload=true;
+      //isupload=true;
     });
   }
-
 
   @override
   void initState() {
@@ -94,55 +91,64 @@ class _ChatPageState extends State<ChatPage> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            (messa.messlist[index].messageContent.isEmpty || messa.messlist[index].messageContent == '' || messa.messlist[index].messageContent.length == 0)?SizedBox():Container(
-                              margin:
-                                  const EdgeInsets.only(bottom: 10, right: 10),
-                              height: 45,
-                              width: 150,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(12),
-                                ), //
-                              ),
-                              child: Align(
-                                  alignment: Alignment.center,
-                                  child:  Text(
-                                      messa.messlist[index].messageContent)
-                              ),
-                            ),
-
-                            (messa.messlist[index].arrimg.isEmpty)? Container():
-                              Column(
-                                children: [
-                                  for(int i=0;i<messa.messlist[index].arrimg.length;i++)
-                                    messa.messlist[index].type? Image.file(File(_image[0].path), fit: BoxFit.cover): CachedNetworkImage(
-                                    fit: BoxFit.cover,
-                                    imageUrl: messa.messlist[index].arrimg[i],
-                                   imageBuilder: (context, imageProvider){
-                                     return Container(
-                                       width: 60,
-                                       height: 60,
-                                       decoration: BoxDecoration(
-                                           image: DecorationImage(
-                                               image: imageProvider,
-                                               fit: BoxFit.cover
-                                           )
-                                       ),
-                                     );
-
-                                   },
-                                   placeholder: (context, url) =>  const CircularProgressIndicator(),
-                                   errorWidget: (context, url, error) => const Icon(Icons.error),
-                                 )
-
-                                ],
-                              )
+                            (messa.messlist[index].messageContent.isEmpty ||
+                                    messa.messlist[index].messageContent ==
+                                        '' ||
+                                    messa.messlist[index].messageContent
+                                            .length ==
+                                        0)
+                                ? SizedBox()
+                                : Container(
+                                    margin: const EdgeInsets.only(
+                                        bottom: 10, right: 10),
+                                    height: 45,
+                                    width: 150,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(12),
+                                      ), //
+                                    ),
+                                    child: Align(
+                                        alignment: Alignment.center,
+                                        child: Text(messa
+                                            .messlist[index].messageContent)),
+                                  ),
+                            (messa.messlist[index].arrimg.isEmpty)
+                                ? Container()
+                                : Column(
+                                    children: [
+                                      for (int i = 0;
+                                          i <
+                                              messa.messlist[index].arrimg
+                                                  .length;
+                                          i++)
+                                        CachedNetworkImage(
+                                          fit: BoxFit.cover,
+                                          imageUrl:
+                                              messa.messlist[index].arrimg[i],
+                                          imageBuilder:
+                                              (context, imageProvider) {
+                                            return Container(
+                                              width: 60,
+                                              height: 60,
+                                              decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover)),
+                                            );
+                                          },
+                                          placeholder: (context, url) =>
+                                              const CircularProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                        )
+                                    ],
+                                  )
                           ],
                         );
                       },
                       itemCount: messa.messlist.length,
-
                     ),
                   ),
                   Container(
@@ -156,9 +162,10 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future uploadFile() async {
+
     int i = 1;
     CollectionReference mess =
-    FirebaseFirestore.instance.collection('messages');
+        FirebaseFirestore.instance.collection('messages');
     List<String> imgs = [];
 
     for (var img in _image) {
@@ -173,14 +180,20 @@ class _ChatPageState extends State<ChatPage> {
         await firebaseStorageRef.getDownloadURL().then((value) {
           chatReference.add({'url': value});
           imgs.add(value);
-          i++;
+          print("đây là giá trị ${value}");
+
         });
       });
     }
     mess
-        .add({ 'text': '', 'images': imgs, 'time':DateTime.now().microsecondsSinceEpoch})
+        .add({
+          'text': '',
+          'images': imgs,
+          'time': DateTime.now().microsecondsSinceEpoch
+        })
         .then((value) => print(" data Added"))
         .catchError((error) => print("data couldn't be added."));
+    i++;
   }
 
   Widget _buildTextInput() {
@@ -233,7 +246,11 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       //_messages.insert(0, chatMessage);
       mess
-          .add({'text': text, 'images': [],'time':DateTime.now().microsecondsSinceEpoch})
+          .add({
+            'text': text,
+            'images': [],
+            'time': DateTime.now().microsecondsSinceEpoch
+          })
           .then((value) => print(" data Added"))
           .catchError((error) => print("data couldn't be added."));
     });
