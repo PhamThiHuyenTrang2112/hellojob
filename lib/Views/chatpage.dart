@@ -5,8 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:word_bank/Controller/mess_controller.dart';
 
@@ -32,6 +35,7 @@ class _ChatPageState extends State<ChatPage> {
   // var type;
   String message = "";
 
+
   var sort;
   final _textController = TextEditingController();
   late Image imageFromPreferences;
@@ -42,18 +46,21 @@ class _ChatPageState extends State<ChatPage> {
   int index = 0;
   List<XFile>? imageFileList = [];
   late String _uploadedFileURL;
+  bool isupload=false;
 
   void selectImages() async {
+    Get.find<MessController>().getDataImage();
     final List<XFile> selectedImages = await imagePicker.pickMultiImage();
     if (selectedImages!.isNotEmpty) {
+
       _image.addAll(selectedImages);
       uploadFile();
-
     }
     setState(() {
-      // uploadFile();
+      isupload=true;
     });
   }
+
 
   @override
   void initState() {
@@ -63,8 +70,8 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference messa =
-        FirebaseFirestore.instance.collection('messages');
+    // CollectionReference messa =
+    //     FirebaseFirestore.instance.collection('messages');
     return Scaffold(
         backgroundColor: Color(-2633006),
         appBar: AppBar(
@@ -104,31 +111,30 @@ class _ChatPageState extends State<ChatPage> {
                                       messa.messlist[index].messageContent)
                               ),
                             ),
+
                             (messa.messlist[index].arrimg.isEmpty)? Container():
                               Column(
                                 children: [
                                   for(int i=0;i<messa.messlist[index].arrimg.length;i++)
-                                   CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      imageUrl: messa.messlist[index].arrimg[i],
-                                      imageBuilder: (context, imageProvider){
-                                        return Container(
-                                          width: 60,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                  image: imageProvider,
-                                                  fit: BoxFit.cover
-                                              )
-                                          ),
-                                        );
+                                    messa.messlist[index].type? Image.file(File(_image[0].path), fit: BoxFit.cover): CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: messa.messlist[index].arrimg[i],
+                                   imageBuilder: (context, imageProvider){
+                                     return Container(
+                                       width: 60,
+                                       height: 60,
+                                       decoration: BoxDecoration(
+                                           image: DecorationImage(
+                                               image: imageProvider,
+                                               fit: BoxFit.cover
+                                           )
+                                       ),
+                                     );
 
-                                      },
-                                      placeholder: (context, url) =>  const CircularProgressIndicator(),
-                                      errorWidget: (context, url, error) => const Icon(Icons.error),
-                                    ),
-                                   //    Image.network(messa.messlist[index].arrimg[i],
-                                   //      width: 100,height: 100,),
+                                   },
+                                   placeholder: (context, url) =>  const CircularProgressIndicator(),
+                                   errorWidget: (context, url, error) => const Icon(Icons.error),
+                                 )
 
                                 ],
                               )
@@ -149,9 +155,6 @@ class _ChatPageState extends State<ChatPage> {
             }));
   }
 
-
-
-
   Future uploadFile() async {
     int i = 1;
     CollectionReference mess =
@@ -170,15 +173,14 @@ class _ChatPageState extends State<ChatPage> {
         await firebaseStorageRef.getDownloadURL().then((value) {
           chatReference.add({'url': value});
           imgs.add(value);
+          i++;
         });
       });
     }
-
     mess
         .add({ 'text': '', 'images': imgs, 'time':DateTime.now().microsecondsSinceEpoch})
         .then((value) => print(" data Added"))
         .catchError((error) => print("data couldn't be added."));
-    i++;
   }
 
   Widget _buildTextInput() {

@@ -9,6 +9,8 @@ class MessController extends GetxController{
   var isLoading = false;
 
   var messlist = <ChatMessage>[];
+  List<dynamic> arrimg=[];
+  bool type=false;
 
 
   Future<void> getDataMess() async {
@@ -16,7 +18,7 @@ class MessController extends GetxController{
       QuerySnapshot words = await FirebaseFirestore.instance.collection('messages').orderBy('time', descending:  true).get();
       messlist.clear();
       for(var word in words.docs){
-        messlist.add(ChatMessage(word['text'],word['images']));
+        messlist.add(ChatMessage(word['text'],word['images'],false));
       }
       isLoading = false;
     } catch(e) {
@@ -24,4 +26,12 @@ class MessController extends GetxController{
     }
     update();
   }
+
+
+  Future<void> getDataImage() async {
+
+    messlist.add(ChatMessage(" ", arrimg,true));
+  }
+
+
 }
