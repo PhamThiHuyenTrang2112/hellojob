@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -8,7 +9,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
-import 'package:full_screen_image/full_screen_image.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
@@ -18,9 +18,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:word_bank/Controller/mess_controller.dart';
 
 import 'package:path/path.dart' as Path;
-import 'package:word_bank/Views/TemplateTwo.dart';
 import 'package:word_bank/Views/template_one.dart';
-import 'package:word_bank/Views/template_three.dart';
+
 import '../Binding/utility.dart';
 import '../Model/word_model.dart';
 
@@ -443,16 +442,16 @@ class _ChatPageState extends State<ChatPage> {
                             MaterialPageRoute(builder: (context) =>  const TemplateOne()),
                           );
                         },
-                          child: Image.asset('assets/images/temp1.png',width: 138,height: 138,)),
+                          child: Image.asset('assets/image/temp1.png',width: 138,height: 138,)),
                       const SizedBox(width: 4,),
                       GestureDetector(
                         onTap: (){
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const TemplateTwo()),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => const TemplateTwo()),
+                          // );
                         },
-                          child: Image.asset('assets/images/temp2.png',width: 138,height: 138,)),
+                          child: Image.asset('assets/image/temp2.png',width: 138,height: 138,)),
                     ],
                   ),
                   const SizedBox(height: 15,),
@@ -460,19 +459,19 @@ class _ChatPageState extends State<ChatPage> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const TemplateThree()),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => const TemplateThree()),
+                          // );
                         },
-                          child: Image.asset('assets/images/box3.png',)),
+                          child: Image.asset('assets/image/temp3.png',)),
                       const SizedBox(width: 4,),
                       GestureDetector(
                         onTap: (){
                           selectImages();
 
                         },
-                          child: Image.asset('assets/images/temp_none.png',width: 138,height: 138,)),
+                          child: Image.asset('assets/image/temp_none.png',width: 138,height: 138,)),
                     ],
                   )
                 ],
