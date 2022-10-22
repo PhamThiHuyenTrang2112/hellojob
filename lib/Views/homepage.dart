@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
                           onTap: (){
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) =>  const ChatPage()),
+                              MaterialPageRoute(builder: (context) =>   ChatPage(wordController.wordList[index].id,wordController.wordList[index].name)),
                             );
                           },
                           child: Card(
