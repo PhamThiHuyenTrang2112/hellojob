@@ -7,7 +7,6 @@ import '../Model/chat_message.dart';
 
 class MessController extends GetxController{
   var isLoading = false;
-
   var messlist = <ChatMessage>[];
   List<dynamic> arrimg=[];
   bool type=false;
@@ -18,7 +17,7 @@ class MessController extends GetxController{
       QuerySnapshot words = await FirebaseFirestore.instance.collection('messages').where('userid',isEqualTo: userid).orderBy('time', descending:  true).get();
       messlist.clear();
       for(var word in words.docs){
-        messlist.add(ChatMessage(word['text'],word['images'],word['imageslocal']));
+        messlist.add(ChatMessage(word['text'],word['images'],word['imageslocal'],word['templete']));
       }
       isLoading = false;
     } catch(e) {

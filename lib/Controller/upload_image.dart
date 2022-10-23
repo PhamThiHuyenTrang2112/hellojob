@@ -13,7 +13,8 @@ class UploadImage{
   TargetPlatform? platform;
   late String _localPath;
 
-  Future uploadFile() async {
+  Future uploadFile(List<XFile> lstFile, String userId, int templete) async {
+    _image = lstFile;
     CollectionReference mess =
     FirebaseFirestore.instance.collection('messages');
     List<String> imgs = [];
@@ -44,7 +45,7 @@ class UploadImage{
       }
     }
 
-    var newmess = {'userid': "widget.userid", 'text': '', 'images': imgs, 'time':DateTime.now().microsecondsSinceEpoch,'imageslocal': imaglocals};
+    var newmess = {'userid': userId, 'templete': templete, 'text': '', 'images': imgs, 'time':DateTime.now().microsecondsSinceEpoch,'imageslocal': imaglocals};
 
     mess
         .add(newmess)

@@ -22,6 +22,7 @@ import 'package:word_bank/Views/template_one.dart';
 
 import '../Binding/utility.dart';
 import '../Model/word_model.dart';
+import 'display_image.dart';
 
 final firestore = FirebaseFirestore.instance;
 
@@ -138,7 +139,8 @@ class _ChatPageState extends State<ChatPage> {
                                  decoration: BoxDecoration(
                                    borderRadius: BorderRadius.circular(20),
                                  ),
-                                 child:   _columImg(messa.messlist[index].arrimglocal))
+                                 child:
+                                 DisplayTemplate(messa.messlist[index].templete,messa.messlist[index].arrimglocal))
 
                           ],
                         );
@@ -180,7 +182,16 @@ class _ChatPageState extends State<ChatPage> {
   //     print(response.file);
   //   }
   // }
+  Widget DisplayTemplate(int index,List<dynamic> listimg){
+    switch(index){
+      case 1: return DisplayImage(listimg);
+      break;
+      default:
+        return _columImg(listimg);
+        break;
+    }
 
+  }
   Future uploadFile() async {
     CollectionReference mess =
     FirebaseFirestore.instance.collection('messages');
@@ -212,7 +223,7 @@ class _ChatPageState extends State<ChatPage> {
       }
     }
 
-    var newmess = {'userid': widget.userid, 'text': '', 'images': imgs, 'time':DateTime.now().microsecondsSinceEpoch,'imageslocal': imaglocals};
+    var newmess = {'userid': widget.userid,'templete': 0, 'text': '', 'images': imgs, 'time':DateTime.now().microsecondsSinceEpoch,'imageslocal': imaglocals};
 
     mess
         .add(newmess)
@@ -394,7 +405,7 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       //_messages.insert(0, chatMessage);
       mess
-          .add({ 'userid': widget.userid, 'text': text, 'images': [],'time':DateTime.now().microsecondsSinceEpoch, 'imageslocal': []})
+          .add({ 'userid': widget.userid, 'templete': 0,  'text': text, 'images': [],'time':DateTime.now().microsecondsSinceEpoch, 'imageslocal': []})
           .then((value) => print(" data Added"))
           .catchError((error) => print("data couldn't be added."));
     });
@@ -437,9 +448,10 @@ class _ChatPageState extends State<ChatPage> {
                     children: [
                       GestureDetector(
                         onTap: (){
+                          Navigator.of(context).pop();
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) =>  const TemplateOne()),
+                            MaterialPageRoute(builder: (context) =>   TemplateOne(widget.userid)),
                           );
                         },
                           child: Image.asset('assets/image/temp1.png',width: 138,height: 138,)),
@@ -463,8 +475,7 @@ class _ChatPageState extends State<ChatPage> {
                           //   context,
                           //   MaterialPageRoute(builder: (context) => const TemplateThree()),
                           // );
-                        },
-                          child: Image.asset('assets/image/temp3.png',)),
+                        }, child: Image.asset('assets/image/temp3.png',)),
                       const SizedBox(width: 4,),
                       GestureDetector(
                         onTap: (){
