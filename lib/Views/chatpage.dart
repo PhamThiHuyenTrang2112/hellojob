@@ -19,10 +19,12 @@ import 'package:word_bank/Controller/mess_controller.dart';
 
 import 'package:path/path.dart' as Path;
 import 'package:word_bank/Views/template_one.dart';
+import 'package:word_bank/Views/templete_two.dart';
 
 import '../Binding/utility.dart';
 import '../Model/word_model.dart';
 import 'display_image.dart';
+import 'display_templete_two.dart';
 
 final firestore = FirebaseFirestore.instance;
 
@@ -185,6 +187,8 @@ class _ChatPageState extends State<ChatPage> {
   Widget DisplayTemplate(int index,List<dynamic> listimg){
     switch(index){
       case 1: return DisplayImage(listimg);
+      break;
+      case 2: return DisplayTempleteTwo(listimg);
       break;
       default:
         return _columImg(listimg);
@@ -458,10 +462,11 @@ class _ChatPageState extends State<ChatPage> {
                       const SizedBox(width: 4,),
                       GestureDetector(
                         onTap: (){
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => const TemplateTwo()),
-                          // );
+                          Navigator.of(context).pop();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>  TempleteTwo(widget.userid)),
+                          );
                         },
                           child: Image.asset('assets/image/temp2.png',width: 138,height: 138,)),
                     ],
@@ -479,8 +484,8 @@ class _ChatPageState extends State<ChatPage> {
                       const SizedBox(width: 4,),
                       GestureDetector(
                         onTap: (){
+                          Navigator.of(context).pop();
                           selectImages();
-
                         },
                           child: Image.asset('assets/image/temp_none.png',width: 138,height: 138,)),
                     ],

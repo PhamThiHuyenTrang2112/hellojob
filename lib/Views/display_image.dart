@@ -18,40 +18,38 @@ class _DisplayImageState extends State<DisplayImage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 50,),
-
         Container(
-          width: 327,
-          height: 223,
+          width: 350,
+          height: 180,
           decoration: BoxDecoration(
               color: const Color(-2500135),
               borderRadius: BorderRadius.circular(10)
           ),
-          child: Image.file(File(widget.listimg[0])),
+          child: Image.file(File(widget.listimg[0]),height: 180,fit: BoxFit.cover,),
         ),
         Row(
           children: [
-            const SizedBox(width: 20,),
-
             Container(
-              width: 157,
-              height: 173,
+              width: 130,
+              height: 160,
               decoration: BoxDecoration(
                   color: const Color(-2500135),
                   borderRadius: BorderRadius.circular(10)
               ),
-              child: Image.file(File(widget.listimg[1])),
+              child: Image.file(File(widget.listimg[1]),height: 160,fit: BoxFit.cover,),
             ),
             const SizedBox(width: 5,),
 
-            Container(
-              width: 157,
-              height: 173,
-              decoration: BoxDecoration(
-                  color: const Color(-2500135),
-                  borderRadius: BorderRadius.circular(10)
+            Expanded(
+              child: Container(
+                width: 140,
+                height: 160,
+                decoration: BoxDecoration(
+                    color: const Color(-2500135),
+                    borderRadius: BorderRadius.circular(10)
+                ),
+                child: Image.file(File(widget.listimg[2]),height: 120,fit: BoxFit.cover,),
               ),
-              child: Image.file(File(widget.listimg[2])),
             ),
           ],
         )
