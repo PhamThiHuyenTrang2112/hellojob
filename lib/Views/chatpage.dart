@@ -18,7 +18,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:word_bank/Controller/mess_controller.dart';
 
 import 'package:path/path.dart' as Path;
+import 'package:word_bank/Views/display_templete_three.dart';
 import 'package:word_bank/Views/template_one.dart';
+import 'package:word_bank/Views/templete_three.dart';
 import 'package:word_bank/Views/templete_two.dart';
 
 import '../Binding/utility.dart';
@@ -189,6 +191,8 @@ class _ChatPageState extends State<ChatPage> {
       case 1: return DisplayImage(listimg);
       break;
       case 2: return DisplayTempleteTwo(listimg);
+      break;
+      case 3: return DisplayTempleteThree(listimg);
       break;
       default:
         return _columImg(listimg);
@@ -476,10 +480,10 @@ class _ChatPageState extends State<ChatPage> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => const TemplateThree()),
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>  TempleteThree(widget.userid)),
+                          );
                         }, child: Image.asset('assets/image/temp3.png',)),
                       const SizedBox(width: 4,),
                       GestureDetector(

@@ -19,7 +19,6 @@ class TempleteTwo extends StatefulWidget {
 
 class _TempleteTwoState extends State<TempleteTwo> {
   File? imageFile;
-
   File? imageFile1;
   File? imageFile2;
   File? imageFile3;
@@ -55,10 +54,9 @@ class _TempleteTwoState extends State<TempleteTwo> {
                     color: const Color(-2500135),
                     borderRadius: BorderRadius.circular(10)
                 ),
-                child: Image.file(imageFile!,width: 157,fit: BoxFit.cover,),
-
+                child: Image.file(imageFile!,width: 157,fit: BoxFit.cover),
               ),
-              const SizedBox(width: 5,),
+              const SizedBox(width: 5),
               imageFile1==null?Container(
                 margin: const EdgeInsets.only(bottom: 5),
                 //clipBehavior: Clip.hardEdge,
